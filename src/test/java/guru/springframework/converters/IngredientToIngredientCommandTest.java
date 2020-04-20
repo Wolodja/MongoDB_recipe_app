@@ -13,9 +13,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-/**
- * Created by jt on 6/21/17.
- */
 public class IngredientToIngredientCommandTest {
 
     public static final Recipe RECIPE = new Recipe();

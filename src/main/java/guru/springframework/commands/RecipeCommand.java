@@ -13,9 +13,6 @@ import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by jt on 6/21/17.
- */
 @Getter
 @Setter
 @NoArgsConstructor
