@@ -16,11 +16,13 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import reactor.core.publisher.Flux;
 
 @Slf4j
 @Controller
 public class IngredientController {
 
+    private static final String INGREDIENTFORM = "recipe/ingredient/ingredientform";
     private final IngredientService ingredientService;
     private final RecipeService recipeService;
     private final UnitOfMeasureService unitOfMeasureService;
@@ -70,9 +72,8 @@ public class IngredientController {
         //init uom
         ingredientCommand.setUom(new UnitOfMeasureCommand());
 
-        model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
 
-        return "recipe/ingredient/ingredientform";
+        return INGREDIENTFORM;
     }
 
     @GetMapping("recipe/{recipeId}/ingredient/{id}/update")
@@ -80,25 +81,21 @@ public class IngredientController {
                                          @PathVariable String id, Model model) {
         model.addAttribute("ingredient", ingredientService.findByRecipeIdAndIngredientId(recipeId, id).block());
 
-        model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
-        return "recipe/ingredient/ingredientform";
+        return INGREDIENTFORM;
     }
 
     @PostMapping("recipe/{recipeId}/ingredient")
     public String saveOrUpdate(@ModelAttribute("ingredient") IngredientCommand command,
-                               @PathVariable String recipeId,
-                               Model model) {
+                               @PathVariable String recipeId) {
 
         webDataBinder.validate();
         BindingResult bindingResult = webDataBinder.getBindingResult();
 
         if (bindingResult.hasErrors()) {
 
-            bindingResult.getAllErrors().forEach(objectError -> {
-                log.debug(objectError.toString());
-            });
-            model.addAttribute("uomList", unitOfMeasureService.listAllUoms());
-            return "recipe/ingredient/ingredientform";
+            bindingResult.getAllErrors().forEach(objectError -> log.debug(objectError.toString()));
+
+            return INGREDIENTFORM;
         }
 
         IngredientCommand savedCommand = ingredientService.saveIngredientCommand(command).block();
@@ -117,5 +114,10 @@ public class IngredientController {
         ingredientService.deleteById(recipeId, id).block();
 
         return "redirect:/recipe/" + recipeId + "/ingredients";
+    }
+
+    @ModelAttribute("uomList")
+    public Flux<UnitOfMeasureCommand> populateUnitOfMeasure() {
+        return unitOfMeasureService.listAllUoms();
     }
 }
