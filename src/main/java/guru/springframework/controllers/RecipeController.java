@@ -27,12 +27,12 @@ public class RecipeController {
     }
 
     @InitBinder
-    public void initDataBinder(WebDataBinder webDataBinder){
+    public void initDataBinder(WebDataBinder webDataBinder) {
         this.webDataBinder = webDataBinder;
     }
 
     @GetMapping("/recipe/{id}/show")
-    public String showById(@PathVariable String id, Model model){
+    public String showById(@PathVariable String id, Model model) {
 
         model.addAttribute("recipe", recipeService.findById(id));
 
@@ -40,25 +40,25 @@ public class RecipeController {
     }
 
     @GetMapping("recipe/new")
-    public String newRecipe(Model model){
+    public String newRecipe(Model model) {
         model.addAttribute("recipe", new RecipeCommand());
 
         return "recipe/recipeform";
     }
 
     @GetMapping("recipe/{id}/update")
-    public String updateRecipe(@PathVariable String id, Model model){
+    public String updateRecipe(@PathVariable String id, Model model) {
         model.addAttribute("recipe", recipeService.findCommandById(id).block());
         return RECIPE_RECIPEFORM_URL;
     }
 
     @PostMapping("recipe")
-    public String saveOrUpdate(@ModelAttribute("recipe") RecipeCommand command){
+    public String saveOrUpdate(@ModelAttribute("recipe") RecipeCommand command) {
 
         webDataBinder.validate();
         BindingResult bindingResult = webDataBinder.getBindingResult();
 
-        if(bindingResult.hasErrors()){
+        if (bindingResult.hasErrors()) {
 
             bindingResult.getAllErrors().forEach(objectError -> {
                 log.debug(objectError.toString());
@@ -73,7 +73,7 @@ public class RecipeController {
     }
 
     @GetMapping("recipe/{id}/delete")
-    public String deleteById(@PathVariable String id){
+    public String deleteById(@PathVariable String id) {
 
         log.debug("Deleting id: " + id);
 
